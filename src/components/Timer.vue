@@ -65,7 +65,7 @@ export default {
 .timer {
     //background: #db2f64;
     background: #ffffffc7;
-    color: white;
+    color: #db2f64;
     width: 50%;
     height: 200px;
     position: absolute;
