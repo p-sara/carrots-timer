@@ -1,17 +1,17 @@
 <template>
   <div class="timer">
-    <h1>{{ msg }}</h1>
+    <h3>{{ msg }}</h3>
       <div v-if="inputVisible">
           <input type="number"
                  min="0"
                  placeholder="Liczba minut"
-                 v-model="startValue">
+                 v-model="startValue"
+                 @keyup.enter="setTimer(startValue)">
           <button :disabled="startValue === null"
-                  @click="setTimer()">Start</button>
+                  @click="setTimer(startValue)">Start</button>
       </div>
       <div v-else>
-          <h3>{{timer.minutes}}:{{timer.seconds < 10 ? '0' + timer.seconds : timer.seconds}}
-          </h3>
+          <h3>{{timer}}</h3>
           <button @click="resetTimer()">Reset</button>
       </div>
   </div>
@@ -20,42 +20,38 @@
 <script>
 export default {
   name: 'Timer',
-  props: {
-    msg: String
-  },
   data: () => ({
+    msg: 'Meet-up starts in',
     startValue: null,
-    inputVisible: true,
-    timer: {
-        minutes: null,
-        seconds: null
-    }
+    inputVisible: true, 
+    timer: null
   }),
   methods: {
-    setTimer() {
+    setTimer(val) {
       this.inputVisible = false;
-      this.countdown(this.startValue);
+      this.countdown(val);
     },
-    countdown(timerValue) {
-      let initialMinutes = timerValue;
-      let initialSeconds = 60;
-      this.timer.minutes = parseInt(initialMinutes / 60, 10);
-      this.timer.seconds = parseInt(initialSeconds % 60, 10);
-      // let date = new Date;
-//      console.log(date.getMinutes())
-//      console.log(date.getSeconds())
-        const countFunction = setInterval(() => {
-            //this.timer.minutes = initialMinutes-=1;
-            this.timer.seconds = initialSeconds < 0 ? 60 : initialSeconds-=1;
+    countdown(duration) {
+      let timer = duration * 60, minutes, seconds;
+      this.timer = `${duration}:00`;
 
+      const lol = setInterval(() => {
+          minutes = parseInt(timer / 60, 10);
+          seconds = parseInt(timer % 60, 10); 
 
-            console.log()
-                //this.timerValue = initial-=1;
-                if (initialMinutes <= 0 || this.startValue === null) {
-                  clearInterval(countFunction)
-                }
-            }, 1000)
-        // https://stackoverflow.com/questions/20618355/the-simplest-possible-javascript-countdown-timer
+          seconds = seconds < 10 ? "0" + seconds : seconds;
+
+          this.timer = `${minutes}:${seconds}`
+
+          if (--timer < 0) {
+            this.timer = "Yay! It's time to start"
+            this.msg = ''
+          } 
+
+          if (!this.startValue) {
+            clearInterval(lol)
+          }
+        }, 1000)
     },
     resetTimer() {
       this.inputVisible = true;
@@ -65,9 +61,10 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .timer {
-    background: #db2f64;
+    //background: #db2f64;
+    background: #ffffffc7;
     color: white;
     width: 50%;
     height: 200px;
@@ -75,6 +72,6 @@ export default {
     left: 25%;
     top:25%;
     z-index: 10000;
-
+    mix-blend-mode: exclusion
 }
 </style>
